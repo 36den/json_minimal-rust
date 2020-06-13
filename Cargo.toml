@@ -1,0 +1,13 @@
+[package]
+name = "json_minimal"
+version = "0.1.0"
+authors = ["36den"]
+edition = "2018"
+description = "A minimal json crate."
+license = "MIT OR Apache-2.0"
+keywords = ["json","minimal"]
+categories = ["encoding"]
+repository = "https://github.com/36den/json_minimal-rust"
+readme = "README.md"
+
+[dependencies]
