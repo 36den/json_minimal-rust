@@ -529,8 +529,6 @@ impl Json {
                 return Err( (incr,"Not a valid json format") );
             }
         }
-
-        todo!()
     }
 
     // This must exclusively be used by `parse_string` to make any sense.
@@ -1002,8 +1000,6 @@ impl Json {
                 }
             }
         }
-
-        todo!()
     }
 
     // Parse a &str if you're sure it resembles `[...`
