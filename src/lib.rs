@@ -994,7 +994,17 @@ impl Json {
                     *incr += 1;
 
                     return Ok( Json::JSON( result ) );
-                }
+                },
+                '{' => {
+                    match Self::parse_json(input,incr) {
+                        Ok(json) => {
+                            result.push( json );
+                        },
+                        Err(e) => {
+                            return Err(e);
+                        }
+                    }
+                },
                 _ => {
                     return Err( (*incr,"Error parsing json.") );  
                 }
@@ -1039,6 +1049,16 @@ impl Json {
                 },
                 '[' => {
                     match Self::parse_array(input,incr) {
+                        Ok(json) => {
+                            result.push( json );
+                        },
+                        Err(e) => {
+                            return Err(e);
+                        }
+                    }
+                },
+                '{' => {
+                    match Self::parse_json(input,incr) {
                         Ok(json) => {
                             result.push( json );
                         },
