@@ -172,18 +172,9 @@ Parsing a json value from bytes is even more minimal - at the cost of being more
 ```rust
     use json_minimal::*;
 
-    let mut json = Vec::new();
-
-    match Json::parse(b"{\"Greeting\":\"Hello, world!\",\"Days of the week\":{\"Total number of days\":7,\"They are called\":[\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\",\"Saturday\",\"Sunday\"]},\"Conclusion\":{\"Minimal in my opinion\":true,\"How much I care about your opinion\":null,\"Comment\":\";)\"}}") {
-        Ok(parsed_json) => {
-            match parsed_json {
-                Json::JSON(parsed_values) => {
-                    json = parsed_values;
-                },
-                _ => {
-                    panic!("Oh no! What happened?");
-                }
-            }
+    let json = match Json::parse(b"{\"Greeting\":\"Hello, world!\",\"Days of the week\":{\"Total number of days\":7,\"They are called\":[\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\",\"Saturday\",\"Sunday\"]},\"Conclusion\":{\"Minimal in my opinion\":true,\"How much I care about your opinion\":null,\"Comment\":\";)\"}}") {
+        Ok(json) => {
+            json
         },
         Err( (position,message) ) => {
             panic!("`{}` at position `{}`!!!");
@@ -195,8 +186,6 @@ Parsing a json value from bytes is even more minimal - at the cost of being more
 Let's first talk about what information is given for a parsing error. As you might expect it is minimal. `position` above is the position were everything went wrong and the `message` will be something like`"Error parsing array."` if, for example, a closing `]` is missing somewhere. Continuing where we left off:
 ```rust
     // ...
-    let json = Json::JSON( json ); // It's called tautology, I think
-
     match json.get("Greeting") {
         Some(json) => {
             match json {
@@ -221,7 +210,7 @@ Let's first talk about what information is given for a parsing error. As you mig
     }
     // ...
 ```
-Unfortunately all of this was necessary because, even though we were able to confirm that `"Greeting"` exists, we had no way of knowing what it really is. It could have been a standalone string value, after all (although nobody does that, i think). It's not over:
+Unfortunately all of this was necessary because, even though we were able to confirm that `"Greeting"` exists, we had no way of knowing what it really is. It's not over:
 ```rust 
     // ...
     match json.get("Days of the week") { // Hint: You can also use `get_mut` to aid in editing/creating jsons...
