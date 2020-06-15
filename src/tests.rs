@@ -473,26 +473,16 @@
     #[test]
     fn test_parse_2() {
         #[allow(unused_assignments)]
-        let mut json = Vec::new();
 
-        match Json::parse(b"{\"Greeting\":\"Hello, world!\",\"Days of the week\":{\"Total number of days\":7,\"They are called\":[\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\",\"Saturday\",\"Sunday\"]},\"Conclusion\":{\"Minimal in my opinion\":true,\"How much I care about your opinion\":null,\"Comment\":\";)\"}}") {
-            Ok(parsed_json) => {
-                match parsed_json {
-                    Json::JSON(parsed_values) => {
-                        json = parsed_values;
-                    },
-                    _ => {
-                        panic!("Oh no! What happened?");
-                    }
-                }
+        let json = match Json::parse(b"{\"Greeting\":\"Hello, world!\",\"Days of the week\":{\"Total number of days\":7,\"They are called\":[\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\",\"Saturday\",\"Sunday\"]},\"Conclusion\":{\"Minimal in my opinion\":true,\"How much I care about your opinion\":null,\"Comment\":\";)\"}}") {
+            Ok(json) => {
+                json
             },
             Err( (position,message) ) => {
                 panic!("`{}` at position `{}`!!!",message,position);
             }
-        }
-
-        let json = Json::JSON( json );
-
+        };
+        
         match json.get("Greeting") {
             Some(json) => {
                 match json {
@@ -555,6 +545,63 @@
             },
             None => {
                 panic!("Days of the week not found!");
+            }
+        }
+    }
+
+    #[test]
+    fn parse_strange() {
+        let json = match Json::parse(b"[0,{\"hello\":\"world\",\"what's\":\"up?\"}]") {
+            Ok(json) => {
+                json
+            },
+            Err( (pos,msg) ) => {
+                panic!("`{}` at position {}",msg,pos);
+            }
+        };
+
+        match json {
+            Json::ARRAY(vals) => {
+                assert_eq!(vals.len(),2);
+
+                match &vals[0] {
+                    Json::NUMBER(n) => {
+                        assert_eq!(*n,0.0);
+                    },
+                    json => {
+                        panic!("Expected Json::NUMBER but found {:?}!!!",json);
+                    }
+                }
+
+                match &vals[1] {
+                    Json::JSON(vals) => {
+                        assert_eq!(2,vals.len());
+
+                        match &vals[0] {
+                            Json::OBJECT{ name, value: _ } => {
+                                assert_eq!("hello",name);
+                            },
+                            json => {
+                                panic!("Expected Json::ARRAY but found {:?}!!!",json);
+                            }
+                        }
+
+                        match &vals[1] {
+                            Json::OBJECT{ name, value: _ } => {
+                                assert_eq!("what's",name);
+                            },
+                            json => {
+                                panic!("Expected Json::ARRAY but found {:?}!!!",json);
+                            }
+                        }
+                    },
+                    json => {
+                        panic!("Expected Json::JSON but found {:?}!!!",json);
+                    },
+                }
+            },
+            json => {
+                panic!("Expected Json::ARRAY but found {:?}!!!",json);
             }
         }
     }
