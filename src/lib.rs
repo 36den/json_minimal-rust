@@ -270,8 +270,6 @@ impl Json {
                         _ => {}
                     }
                 }
-
-                return None;
             },
             Json::OBJECT { name: _, value } => {
                 match value.unbox_mut() {
@@ -286,8 +284,6 @@ impl Json {
                                 _ => {}
                             }
                         }
-        
-                        return None;
                     },
                     json => {
                         panic!("The function `get_mut(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
@@ -298,6 +294,8 @@ impl Json {
                 panic!("The function `get_mut(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
             }
         }
+
+        None
     }
 
     /// Enables matching the contents of a `Box`.
@@ -412,28 +410,28 @@ impl Json {
 
         match input[incr] as char {
             '{' => {
-                return Self::parse_json(input,&mut incr);
+                Self::parse_json(input,&mut incr)
             },
             '\"' => {
-                return Self::parse_string(input,&mut incr);
+                Self::parse_string(input,&mut incr)
             },
             '[' => {
-                return Self::parse_array(input,&mut incr);
+                Self::parse_array(input,&mut incr)
             },
             't' => {
-                return Self::parse_bool(input,&mut incr);
+                Self::parse_bool(input,&mut incr)
             },
             'f' => {
-                return Self::parse_bool(input,&mut incr);
+                Self::parse_bool(input,&mut incr)
             },
             'n' => {
-                return Self::parse_null(input,&mut incr);
+                Self::parse_null(input,&mut incr)
             },
             '0'..='9' => {
-                return Self::parse_number(input,&mut incr);
+                Self::parse_number(input,&mut incr)
             },
             _ => {
-                return Err( (incr,"Not a valid json format") );
+                Err( (incr,"Not a valid json format") )
             }
         }
     }
@@ -460,7 +458,7 @@ impl Json {
             '{' => {
                 match Self::parse_json(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -469,14 +467,14 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             '[' => {
                 match Self::parse_array(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -485,14 +483,14 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             '\"' => {
                 match Self::parse_string(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -501,14 +499,14 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             't' => {
                 match Self::parse_bool(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -517,14 +515,14 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             'f' => {
                 match Self::parse_bool(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -533,14 +531,14 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             'n' => {
                 match Self::parse_null(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -549,14 +547,14 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             '0'..='9' => {
                 match Self::parse_number(input,incr) {
                     Ok(json) => {
-                        return Ok(
+                        Ok(
                             Json::OBJECT {
                                 name,
 
@@ -565,12 +563,12 @@ impl Json {
                         )
                     },
                     Err(e) => {
-                        return Err(e);
+                        Err(e)
                     }
                 }
             },
             _ => {
-                return Err( (*incr,"Error parsing object.") );
+                Err( (*incr,"Error parsing object.") )
             }
         }
     }
