@@ -454,123 +454,40 @@ impl Json {
             return Err( (*incr,"Error parsing object.") );
         }
 
-        match input[*incr]  as char {
+        let value = match input[*incr]  as char {
             '{' => {
-                match Self::parse_json(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_json(input,incr)?
             },
             '[' => {
-                match Self::parse_array(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_array(input,incr)?
             },
             '\"' => {
-                match Self::parse_string(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_string(input,incr)?
             },
             't' => {
-                match Self::parse_bool(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_bool(input,incr)?
             },
             'f' => {
-                match Self::parse_bool(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_bool(input,incr)?
             },
             'n' => {
-                match Self::parse_null(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_null(input,incr)?
             },
             '0'..='9' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        Err(e)
-                    }
-                }
+                Self::parse_number(input,incr)?
             },
             _ => {
-                Err( (*incr,"Error parsing object.") )
+                return Err( (*incr,"Error parsing object.") );
             }
-        }
+        };
+
+        Ok(
+            Json::OBJECT {
+                name,
+
+                value: Box::new( value )
+            }
+        )
     }
 
     // Parse if you thik it's something like `{...}`
@@ -591,69 +508,28 @@ impl Json {
         }
 
         loop {
-            match input[*incr] as char {
+            let json = match input[*incr] as char {
                 ',' => {
                     *incr += 1;
+                    continue;
                 },
                 '\"' => {
-                    match Self::parse_string(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_string(input,incr)?
                 },
                 '[' => {
-                    match Self::parse_array(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_array(input,incr)?
                 },
                 't' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_bool(input,incr)?
                 },
                 'f' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_bool(input,incr)?
                 },
                 'n' => {
-                    match Self::parse_null(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_null(input,incr)?
                 },
                 '0'..='9' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_number(input,incr)?
                 },
                 '}' => {
                     *incr += 1;
@@ -661,19 +537,14 @@ impl Json {
                     return Ok( Json::JSON( result ) );
                 },
                 '{' => {
-                    match Self::parse_json(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_json(input,incr)?
                 },
                 _ => {
                     return Err( (*incr,"Error parsing json.") );  
                 }
-            }
+            };
+
+            result.push( json );
         }
     }
 
@@ -695,79 +566,31 @@ impl Json {
         }
     
         loop {
-            match input[*incr] as char {
+            let json = match input[*incr] as char {
                 ',' => {
                     *incr += 1;
+                    continue;
                 },
                 '\"' => {
-                    match Self::parse_string(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_string(input,incr)?
                 },
                 '[' => {
-                    match Self::parse_array(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_array(input,incr)?
                 },
                 '{' => {
-                    match Self::parse_json(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_json(input,incr)?
                 },
                 't' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_bool(input,incr)?
                 },
                 'f' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_bool(input,incr)?
                 },
                 'n' => {
-                    match Self::parse_null(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_null(input,incr)?
                 },
                 '0'..='9' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
+                    Self::parse_number(input,incr)?
                 },
                 ']' => {
                     *incr += 1;
@@ -777,7 +600,9 @@ impl Json {
                 _ => {
                     return Err( (*incr,"Error parsing array.") );  
                 }
-            }
+            };
+
+            result.push( json );
         }
     
     }
