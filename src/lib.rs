@@ -216,11 +216,8 @@ impl Json {
                 for n in 0..values.len() {
                     match &values[n] {
                         Json::OBJECT { name, value: _ } => {
-                            match name == search {
-                                true => {
-                                    return Some(&values[n]);
-                                },
-                                false => {},
+                            if name == search {
+                                return Some(&values[n]);
                             }
                         },
                         _ => {}
@@ -235,11 +232,8 @@ impl Json {
                         for n in 0..values.len() {
                             match &values[n] {
                                 Json::OBJECT { name, value: _ } => {
-                                    match name == search {
-                                        true => {
-                                            return Some(&values[n]);
-                                        },
-                                        false => {},
+                                    if name == search {
+                                        return Some(&values[n]);
                                     }
                                 },
                                 _ => {}
@@ -269,11 +263,8 @@ impl Json {
                 for n in 0..values.len() {
                     match &values[n] {
                         Json::OBJECT { name, value: _ } => {
-                            match name == search {
-                                true => {
-                                    return Some(&mut values[n]);
-                                },
-                                false => {},
+                            if name == search {
+                                return Some(&mut values[n]);
                             }
                         },
                         _ => {}
@@ -288,11 +279,8 @@ impl Json {
                         for n in 0..values.len() {
                             match &values[n] {
                                 Json::OBJECT { name, value: _ } => {
-                                    match name == search {
-                                        true => {
-                                            return Some(&mut values[n]);
-                                        },
-                                        false => {},
+                                    if name == search {
+                                        return Some(&mut values[n]);
                                     }
                                 },
                                 _ => {}
@@ -365,13 +353,10 @@ impl Json {
                 result.push_str(&format!("{}",val));
             },
             Json::BOOL(val) => {
-                match val {
-                    true => {
-                        result.push_str("true");
-                    },
-                    false => {
-                        result.push_str("false")
-                    },
+                if *val {
+                    result.push_str("true");
+                } else {
+                    result.push_str("false")
                 }
             },
             Json::NULL => {
@@ -467,11 +452,8 @@ impl Json {
 
         *incr += 1;
 
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing object.") );
-            }
+        if *incr >= input.len() {
+            return Err( (*incr,"Error parsing object.") );
         }
 
         match input[*incr]  as char {
@@ -606,11 +588,8 @@ impl Json {
     
         *incr += 1;
     
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing json.") );
-            }
+        if *incr >= input.len() {
+            return Err( (*incr,"Error parsing json.") );
         }
 
         loop {
@@ -713,11 +692,8 @@ impl Json {
     
         *incr += 1;
     
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing array.") );
-            }
+        if *incr >= input.len() {
+            return Err( (*incr,"Error parsing array.") );
         }
     
         loop {
@@ -821,11 +797,8 @@ impl Json {
 
         *incr += 1;
 
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing string.") );
-            }
+        if *incr >= input.len() {
+            return Err( (*incr,"Error parsing string.") );
         }
 
         loop {
@@ -833,20 +806,17 @@ impl Json {
                 '\"' => {
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {
-                            match input[*incr] as char {
-                                ':' => {
-                                    return Self::parse_object(input,incr,result);
-                                },
-                                _ => {
-                                    return Ok( Json::STRING( result ) );
-                                }
+                    if *incr < input.len() {
+                        match input[*incr] as char {
+                            ':' => {
+                                return Self::parse_object(input,incr,result);
+                            },
+                            _ => {
+                                return Ok( Json::STRING( result ) );
                             }
-                        },
-                        false => {
-                            return Ok( Json::STRING( result ) );
                         }
+                    } else {
+                        return Ok( Json::STRING( result ) );
                     }
                 },
                 c => {
@@ -854,11 +824,8 @@ impl Json {
 
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {}
-                        false => {
-                            return Err( (*incr,"Error parsing string.") );
-                        }
+                    if *incr >= input.len() {
+                        return Err( (*incr,"Error parsing string.") );
                     }
                 }
             }
@@ -885,17 +852,13 @@ impl Json {
 
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {
-                        },
-                        false => {
-                            match result.parse::<f64>() {
-                                Ok(num) => {
-                                    return Ok( Json::NUMBER( num ) );
-                                },
-                                Err(_) => {
-                                    return Err( (*incr,"Error parsing number.") );
-                                }
+                    if *incr >= input.len() {
+                        match result.parse::<f64>() {
+                            Ok(num) => {
+                                return Ok( Json::NUMBER( num ) );
+                            },
+                            Err(_) => {
+                                return Err( (*incr,"Error parsing number.") );
                             }
                         }
                     }
@@ -933,42 +896,27 @@ impl Json {
 
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {}
-                        false => {
-                            match result == "true" {
-                                true => {
-                                    return Ok( Json::BOOL( true ) );
-                                },
-                                false => {}
-                            }
-                    
-                            match result == "false" {
-                                true => {
-                                    return Ok( Json::BOOL( false ) );
-                                },
-                                false => {}
-                            }
-                    
-                            return Err( (*incr,"Error parsing bool.") );
+                    if *incr >= input.len() {
+                        if result == "true" {
+                            return Ok( Json::BOOL( true ) );
                         }
+                
+                        if result == "false" {
+                            return Ok( Json::BOOL( false ) );
+                        }
+                
+                        return Err( (*incr,"Error parsing bool.") );
                     }
                 }
             }
         }
 
-        match result == "true" {
-            true => {
-                return Ok( Json::BOOL( true ) );
-            },
-            false => {}
+        if result == "true" {
+            return Ok( Json::BOOL( true ) );
         }
 
-        match result == "false" {
-            true => {
-                return Ok( Json::BOOL( false ) );
-            },
-            false => {}
+        if result == "false" {
+            return Ok( Json::BOOL( false ) );
         }
 
         return Err( (*incr,"Error parsing bool.") );
@@ -994,30 +942,21 @@ impl Json {
 
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {}
-                        false => {
-                            match result == "null" {
-                                true => {
-                                    return Ok( Json::NULL );
-                                },
-                                false => {
-                                    return Err( (*incr,"Error parsing null.") );
-                                }
-                            } 
+                    if *incr >= input.len() {
+                        if result == "null" {
+                            return Ok( Json::NULL );
+                        } else {
+                            return Err( (*incr,"Error parsing null.") );
                         }
                     }
                 }
             }
         }
 
-        match result == "null" {
-            true => {
-                return Ok( Json::NULL );
-            },
-            false => {
-                return Err( (*incr,"Error parsing null.") );
-            }
+        if result == "null" {
+            return Ok( Json::NULL );
+        } else {
+            return Err( (*incr,"Error parsing null.") );
         } 
     }
 
