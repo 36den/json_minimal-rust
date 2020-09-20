@@ -836,13 +836,7 @@ impl Json {
 
         loop {
             match input[*incr] as char {
-                '}' => {
-                    break;
-                },
-                ']' => {
-                    break;
-                },
-                ',' => {
+                ',' | ']' | '}' => {
                     break;
                 },
                 c => {
@@ -880,13 +874,7 @@ impl Json {
 
         loop {
             match input[*incr] as char {
-                ',' => {
-                    break;
-                },
-                ']' => {
-                    break;
-                },
-                '}' => {
+                ',' | ']' | '}' => {
                     break;
                 },
                 c => {
@@ -926,13 +914,7 @@ impl Json {
         loop {
 
             match input[*incr] as char {
-                ',' => {
-                    break;
-                },
-                ']' => {
-                    break;
-                },
-                '}' => {
+                ',' | ']' | '}' => {
                     break;
                 },
                 c => {
