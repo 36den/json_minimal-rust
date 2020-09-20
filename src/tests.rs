@@ -567,6 +567,25 @@ fn parse_escape_sequence_in_array() {
     }
 }
 
+#[test]
+fn parse_non_ascii() {
+    let json = match Json::parse(r#""a ❤ z""#.as_bytes()) {
+        Ok(json) => json,
+        Err((pos, msg)) => {
+            panic!("`{}` at position {}", msg, pos);
+        }
+    };
+
+    match json {
+        Json::STRING(string) => {
+            assert_eq!(string, "a ❤ z");
+        }
+        json => {
+            panic!("Expected Json::STRING but found {:?}!!!", json);
+        }
+    }
+}
+
 fn parse_error((pos, msg): (usize, &str)) {
     panic!("`{}` at position `{}`!!!", msg, pos);
 }

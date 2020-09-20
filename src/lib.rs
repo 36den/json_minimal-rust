@@ -519,7 +519,7 @@ impl Json {
 
     // Parse a &str if you know that it corresponds to/starts with a json String.
     fn parse_string(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
-        let mut result = String::new();
+        let mut result: Vec<u8> = Vec::new();
 
         if input[*incr] as char != '\"' {
             return Err((*incr, "Error parsing string."));
@@ -532,9 +532,12 @@ impl Json {
         }
 
         loop {
-            match input[*incr] as char {
-                '\"' => {
+            match input[*incr] {
+                b'\"' => {
                     *incr += 1;
+
+                    let result = String::from_utf8(result)
+                        .map_err(|_| (*incr, "Error parsing non-utf8 string."))?;
 
                     if *incr < input.len() {
                         if input[*incr] as char == ':' {
@@ -546,7 +549,7 @@ impl Json {
                         return Ok(Json::STRING(result));
                     }
                 }
-                '\\' => {
+                b'\\' => {
                     Self::parse_string_escape_sequence(input, incr, &mut result)?;
                 }
                 c => {
@@ -566,7 +569,7 @@ impl Json {
     fn parse_string_escape_sequence(
         input: &[u8],
         incr: &mut usize,
-        result: &mut String,
+        result: &mut Vec<u8>,
     ) -> Result<(), (usize, &'static str)> {
         if input[*incr] as char != '\\' {
             return Err((*incr, "Error parsing string escape sequence."));
@@ -580,22 +583,22 @@ impl Json {
 
         match input[*incr] as char {
             '\"' | '\\' | '/' => {
-                result.push(input[*incr] as char);
+                result.push(input[*incr]);
             }
             'b' => {
-                result.push('\x08');
+                result.push(b'\x08');
             }
             'f' => {
-                result.push('\x0c');
+                result.push(b'\x0c');
             }
             'n' => {
-                result.push('\n');
+                result.push(b'\n');
             }
             'r' => {
-                result.push('\r');
+                result.push(b'\r');
             }
             't' => {
-                result.push('\t');
+                result.push(b'\t');
             }
             'u' => {
                 const BAD_UNICODE: &str = "Error parsing unicode string escape sequence.";
@@ -609,7 +612,8 @@ impl Json {
                 let value = u16::from_str_radix(&hex, 16).map_err(|_| (*incr, BAD_UNICODE))?;
                 let value = std::char::from_u32(value as u32).ok_or((*incr, BAD_UNICODE))?;
 
-                result.push(value);
+                let mut buffer = [0; 4];
+                result.extend(value.encode_utf8(&mut buffer).as_bytes());
                 *incr += 4;
             }
             _ => {
