@@ -439,13 +439,8 @@ impl Json {
     // This must exclusively be used by `parse_string` to make any sense.
     fn parse_object(input: &[u8],incr: &mut usize,name: String) -> Result<Json,(usize,&'static str)> {
 
-        match input[*incr] as char {
-            ':' => {
-
-            },
-            _ => {
-                return Err( (*incr,"Error parsing object.") );
-            }
+        if input[*incr] as char != ':' {
+            return Err( (*incr,"Error parsing object.") );
         }
 
         *incr += 1;
@@ -494,11 +489,8 @@ impl Json {
     fn parse_json(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
         let mut result: Vec<Json> = Vec::new();
 
-        match input[*incr] as char {
-            '{' => {}
-            _ => {
-                return Err( (*incr,"Error parsing json.") );
-            }
+        if input[*incr] as char != '{' {
+            return Err( (*incr,"Error parsing json.") );
         }
     
         *incr += 1;
@@ -552,11 +544,8 @@ impl Json {
     fn parse_array(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
     let mut result: Vec<Json> = Vec::new();
     
-        match input[*incr] as char {
-            '[' => {}
-            _ => {
-                return Err( (*incr,"Error parsing array.") );
-            }
+        if input[*incr] as char != '[' {
+            return Err( (*incr,"Error parsing array.") );
         }
     
         *incr += 1;
@@ -611,11 +600,8 @@ impl Json {
     fn parse_string(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
         let mut result = String::new();
     
-        match input[*incr] as char {
-            '\"' => {}
-            _ => {
-                return Err( (*incr,"Error parsing string.") );
-            }
+        if input[*incr] as char != '\"' {
+            return Err( (*incr,"Error parsing string.") );
         }
 
         *incr += 1;
