@@ -418,10 +418,7 @@ impl Json {
             '[' => {
                 Self::parse_array(input,&mut incr)
             },
-            't' => {
-                Self::parse_bool(input,&mut incr)
-            },
-            'f' => {
+            't' | 'f' => {
                 Self::parse_bool(input,&mut incr)
             },
             'n' => {
@@ -459,10 +456,7 @@ impl Json {
             '\"' => {
                 Self::parse_string(input,incr)?
             },
-            't' => {
-                Self::parse_bool(input,incr)?
-            },
-            'f' => {
+            't' | 'f' => {
                 Self::parse_bool(input,incr)?
             },
             'n' => {
@@ -511,10 +505,7 @@ impl Json {
                 '[' => {
                     Self::parse_array(input,incr)?
                 },
-                't' => {
-                    Self::parse_bool(input,incr)?
-                },
-                'f' => {
+                't' | 'f' => {
                     Self::parse_bool(input,incr)?
                 },
                 'n' => {
@@ -569,10 +560,7 @@ impl Json {
                 '{' => {
                     Self::parse_json(input,incr)?
                 },
-                't' => {
-                    Self::parse_bool(input,incr)?
-                },
-                'f' => {
+                't' | 'f' => {
                     Self::parse_bool(input,incr)?
                 },
                 'n' => {
