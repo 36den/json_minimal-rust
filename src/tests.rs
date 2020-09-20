@@ -520,6 +520,53 @@ fn parse_strange() {
     }
 }
 
+#[test]
+fn parse_escape_sequence() {
+    let json = match Json::parse(br#""a \" \/ \b \f \n \r \t \u2764 z""#) {
+        Ok(json) => json,
+        Err((pos, msg)) => {
+            panic!("`{}` at position {}", msg, pos);
+        }
+    };
+
+    match json {
+        Json::STRING(string) => {
+            assert_eq!(string, "a \" / \u{8} \u{c} \n \r \t ❤ z");
+        }
+        json => {
+            panic!("Expected Json::STRING but found {:?}!!!", json);
+        }
+    }
+}
+
+#[test]
+fn parse_escape_sequence_in_array() {
+    let json = match Json::parse(br#"["\"foo"]"#) {
+        Ok(json) => json,
+        Err((pos, msg)) => {
+            panic!("`{}` at position {}", msg, pos);
+        }
+    };
+
+    match json {
+        Json::ARRAY(vals) => {
+            assert_eq!(vals.len(), 1);
+
+            match &vals[0] {
+                Json::STRING(n) => {
+                    assert_eq!(*n, "\"foo");
+                }
+                json => {
+                    panic!("Expected Json::STRING but found {:?}!!!", json);
+                }
+            }
+        }
+        json => {
+            panic!("Expected Json::ARRAY but found {:?}!!!", json);
+        }
+    }
+}
+
 fn parse_error((pos, msg): (usize, &str)) {
     panic!("`{}` at position `{}`!!!", msg, pos);
 }

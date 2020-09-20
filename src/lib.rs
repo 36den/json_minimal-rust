@@ -546,6 +546,9 @@ impl Json {
                         return Ok(Json::STRING(result));
                     }
                 }
+                '\\' => {
+                    Self::parse_string_escape_sequence(input, incr, &mut result)?;
+                }
                 c => {
                     result.push(c);
 
@@ -557,6 +560,70 @@ impl Json {
                 }
             }
         }
+    }
+
+    // Parse a escape sequence inside a string
+    fn parse_string_escape_sequence(
+        input: &[u8],
+        incr: &mut usize,
+        result: &mut String,
+    ) -> Result<(), (usize, &'static str)> {
+        if input[*incr] as char != '\\' {
+            return Err((*incr, "Error parsing string escape sequence."));
+        }
+
+        *incr += 1;
+
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing string escape sequence."));
+        }
+
+        match input[*incr] as char {
+            '\"' | '\\' | '/' => {
+                result.push(input[*incr] as char);
+            }
+            'b' => {
+                result.push('\x08');
+            }
+            'f' => {
+                result.push('\x0c');
+            }
+            'n' => {
+                result.push('\n');
+            }
+            'r' => {
+                result.push('\r');
+            }
+            't' => {
+                result.push('\t');
+            }
+            'u' => {
+                const BAD_UNICODE: &str = "Error parsing unicode string escape sequence.";
+
+                if *incr + 4 >= input.len() {
+                    return Err((*incr, BAD_UNICODE));
+                }
+
+                let hex = (&input[*incr + 1..*incr + 5]).to_vec();
+                let hex = String::from_utf8(hex).map_err(|_| (*incr, BAD_UNICODE))?;
+                let value = u16::from_str_radix(&hex, 16).map_err(|_| (*incr, BAD_UNICODE))?;
+                let value = std::char::from_u32(value as u32).ok_or((*incr, BAD_UNICODE))?;
+
+                result.push(value);
+                *incr += 4;
+            }
+            _ => {
+                return Err((*incr, "Error parsing invalid string escape sequence."));
+            }
+        }
+
+        *incr += 1;
+
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing string escape sequence."));
+        }
+
+        Ok(())
     }
 
     fn parse_number(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
