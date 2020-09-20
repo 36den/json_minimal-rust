@@ -604,13 +604,10 @@ impl Json {
                     *incr += 1;
 
                     if *incr < input.len() {
-                        match input[*incr] as char {
-                            ':' => {
-                                return Self::parse_object(input,incr,result);
-                            },
-                            _ => {
-                                return Ok( Json::STRING( result ) );
-                            }
+                        if input[*incr] as char == ':' {
+                            return Self::parse_object(input,incr,result);
+                        } else {
+                            return Ok( Json::STRING( result ) );
                         }
                     } else {
                         return Ok( Json::STRING( result ) );
