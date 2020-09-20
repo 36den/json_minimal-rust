@@ -54,39 +54,26 @@ impl Json {
                 match value {
                     Json::OBJECT { name, value } => {
                         values.push( Json::OBJECT { name, value } );
-
-                        return self;
                     },
                     Json::JSON(_) => {
                         panic!("A `Json::JSON` may not be added to a `Json::JSON` if it is not within a `Json::OBJECT`.");
                     },
                     Json::ARRAY(vals) => {
                         values.push( Json::ARRAY(vals) );
-
-                        return self;
                     },
                     Json::STRING(val) => {
                         values.push( Json::STRING(val) );
-
-                        return self;
                     },
                     Json::NUMBER(val) => {
                         values.push( Json::NUMBER(val) );
-
-                        return self;
                     },
                     Json::BOOL(val) => {
                         values.push( Json::BOOL(val) );
-
-                        return self;
                     },
                     Json::NULL => {
                         values.push( Json::NULL );
-
-                        return self;
                     }
                 }
-
             },
             Json::OBJECT{ name: _, value: obj_val} => {
                 match obj_val.unbox_mut() {
@@ -94,36 +81,24 @@ impl Json {
                         match value {
                             Json::OBJECT { name, value } => {
                                 values.push( Json::OBJECT { name, value } );
-        
-                                return self;
                             },
                             Json::JSON(_) => {
                                 panic!("A `Json::JSON` may not be added to a `Json::JSON` if it is not within a `Json::OBJECT`.");
                             },
                             Json::ARRAY(vals) => {
                                 values.push( Json::ARRAY(vals) );
-        
-                                return self;
                             },
                             Json::STRING(val) => {
                                 values.push( Json::STRING(val) );
-        
-                                return self;
                             },
                             Json::NUMBER(val) => {
                                 values.push( Json::NUMBER(val) );
-        
-                                return self;
                             },
                             Json::BOOL(val) => {
                                 values.push( Json::BOOL(val) );
-        
-                                return self;
                             },
                             Json::NULL => {
                                 values.push( Json::NULL );
-        
-                                return self;
                             }
                         }
                     },
@@ -131,38 +106,24 @@ impl Json {
                         match value {
                             Json::OBJECT { name, value } => {
                                 values.push( Json::OBJECT { name, value } );
-        
-                                return self;
                             },
                             Json::JSON(vals) => {
                                 values.push( Json::JSON(vals) );
-        
-                                return self;
                             },
                             Json::ARRAY(vals) => {
                                 values.push( Json::ARRAY(vals) );
-        
-                                return self;
                             },
                             Json::STRING(val) => {
                                 values.push( Json::STRING(val) );
-        
-                                return self;
                             },
                             Json::NUMBER(val) => {
                                 values.push( Json::NUMBER(val) );
-        
-                                return self;
                             },
                             Json::BOOL(val) => {
                                 values.push( Json::BOOL(val) );
-        
-                                return self;
                             },
                             Json::NULL => {
                                 values.push( Json::NULL );
-        
-                                return self;
                             }
                         }
                     },
@@ -175,38 +136,24 @@ impl Json {
                 match value {
                     Json::OBJECT { name, value } => {
                         values.push( Json::OBJECT { name, value } );
-
-                        return self;
                     },
                     Json::JSON(vals) => {
                         values.push( Json::JSON(vals) );
-
-                        return self;
                     },
                     Json::ARRAY(vals) => {
                         values.push( Json::ARRAY(vals) );
-
-                        return self;
                     },
                     Json::STRING(val) => {
                         values.push( Json::STRING(val) );
-
-                        return self;
                     },
                     Json::NUMBER(val) => {
                         values.push( Json::NUMBER(val) );
-
-                        return self;
                     },
                     Json::BOOL(val) => {
                         values.push( Json::BOOL(val) );
-
-                        return self;
                     },
                     Json::NULL => {
                         values.push( Json::NULL );
-
-                        return self;
                     }
                 }
             },
@@ -214,6 +161,8 @@ impl Json {
                 panic!("The function `add(`&mut self`,`name: String`,`value: Json`)` may only be called on a `Json::JSON`, `Json::ARRAY` or `Json::OBJECT` holding a `Json::JSON` or `Json::ARRAY`. It was called on: {:?}",json);
             }
         }
+
+        self
     }
 
     /// Get the `Json` with the requested name if it exists.
