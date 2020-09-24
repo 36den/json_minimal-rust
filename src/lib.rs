@@ -1,9 +1,6 @@
 #[derive(Debug)]
 pub enum Json {
-    OBJECT {
-        name: String,
-        value: Box<Json>,
-    },
+    OBJECT { name: String, value: Box<Json> },
     JSON(Vec<Json>),
     ARRAY(Vec<Json>),
     STRING(String),
@@ -17,7 +14,7 @@ impl Json {
     /// ## Example
     /// ```
     /// use json_minimal::*;
-    /// 
+    ///
     /// let mut json = Json::new();
     /// ```
     pub fn new() -> Json {
@@ -34,12 +31,12 @@ impl Json {
     ///     use json_minimal::*;
     ///     
     ///     let mut json = Json::new();
-    /// 
+    ///
     ///     json
     ///         .add(
     ///             Json::OBJECT {
     ///                 name: String::from("Greeting"),
-    /// 
+    ///
     ///                 value: Box::new(
     ///                     Json::STRING( String::from("Hello, world!") )
     ///                 )
@@ -50,170 +47,112 @@ impl Json {
     /// See the <a href="https://github.com/36den/json_minimal-rs/">tutorial</a> on github for more.
     pub fn add(&mut self, value: Json) -> &mut Json {
         match self {
-            Json::JSON(values) => {
-                match value {
+            Json::JSON(values) => match value {
+                Json::OBJECT { name, value } => {
+                    values.push(Json::OBJECT { name, value });
+                }
+                Json::JSON(_) => {
+                    panic!("A `Json::JSON` may not be added to a `Json::JSON` if it is not within a `Json::OBJECT`.");
+                }
+                Json::ARRAY(vals) => {
+                    values.push(Json::ARRAY(vals));
+                }
+                Json::STRING(val) => {
+                    values.push(Json::STRING(val));
+                }
+                Json::NUMBER(val) => {
+                    values.push(Json::NUMBER(val));
+                }
+                Json::BOOL(val) => {
+                    values.push(Json::BOOL(val));
+                }
+                Json::NULL => {
+                    values.push(Json::NULL);
+                }
+            },
+            Json::OBJECT {
+                name: _,
+                value: obj_val,
+            } => match obj_val.unbox_mut() {
+                Json::JSON(values) => match value {
                     Json::OBJECT { name, value } => {
-                        values.push( Json::OBJECT { name, value } );
-
-                        return self;
-                    },
+                        values.push(Json::OBJECT { name, value });
+                    }
                     Json::JSON(_) => {
                         panic!("A `Json::JSON` may not be added to a `Json::JSON` if it is not within a `Json::OBJECT`.");
-                    },
+                    }
                     Json::ARRAY(vals) => {
-                        values.push( Json::ARRAY(vals) );
-
-                        return self;
-                    },
+                        values.push(Json::ARRAY(vals));
+                    }
                     Json::STRING(val) => {
-                        values.push( Json::STRING(val) );
-
-                        return self;
-                    },
+                        values.push(Json::STRING(val));
+                    }
                     Json::NUMBER(val) => {
-                        values.push( Json::NUMBER(val) );
-
-                        return self;
-                    },
+                        values.push(Json::NUMBER(val));
+                    }
                     Json::BOOL(val) => {
-                        values.push( Json::BOOL(val) );
-
-                        return self;
-                    },
+                        values.push(Json::BOOL(val));
+                    }
                     Json::NULL => {
-                        values.push( Json::NULL );
-
-                        return self;
+                        values.push(Json::NULL);
                     }
-                }
-
-            },
-            Json::OBJECT{ name: _, value: obj_val} => {
-                match obj_val.unbox_mut() {
-                    Json::JSON(values) => {
-                        match value {
-                            Json::OBJECT { name, value } => {
-                                values.push( Json::OBJECT { name, value } );
-        
-                                return self;
-                            },
-                            Json::JSON(_) => {
-                                panic!("A `Json::JSON` may not be added to a `Json::JSON` if it is not within a `Json::OBJECT`.");
-                            },
-                            Json::ARRAY(vals) => {
-                                values.push( Json::ARRAY(vals) );
-        
-                                return self;
-                            },
-                            Json::STRING(val) => {
-                                values.push( Json::STRING(val) );
-        
-                                return self;
-                            },
-                            Json::NUMBER(val) => {
-                                values.push( Json::NUMBER(val) );
-        
-                                return self;
-                            },
-                            Json::BOOL(val) => {
-                                values.push( Json::BOOL(val) );
-        
-                                return self;
-                            },
-                            Json::NULL => {
-                                values.push( Json::NULL );
-        
-                                return self;
-                            }
-                        }
-                    },
-                    Json::ARRAY(values) => {
-                        match value {
-                            Json::OBJECT { name, value } => {
-                                values.push( Json::OBJECT { name, value } );
-        
-                                return self;
-                            },
-                            Json::JSON(vals) => {
-                                values.push( Json::JSON(vals) );
-        
-                                return self;
-                            },
-                            Json::ARRAY(vals) => {
-                                values.push( Json::ARRAY(vals) );
-        
-                                return self;
-                            },
-                            Json::STRING(val) => {
-                                values.push( Json::STRING(val) );
-        
-                                return self;
-                            },
-                            Json::NUMBER(val) => {
-                                values.push( Json::NUMBER(val) );
-        
-                                return self;
-                            },
-                            Json::BOOL(val) => {
-                                values.push( Json::BOOL(val) );
-        
-                                return self;
-                            },
-                            Json::NULL => {
-                                values.push( Json::NULL );
-        
-                                return self;
-                            }
-                        }
-                    },
-                    json => {
-                        panic!("The function `add(`&mut self`,`name: String`,`value: Json`)` may only be called on a `Json::JSON`, `Json::ARRAY` or `Json::OBJECT` holding a `Json::JSON` or `Json::ARRAY`. It was called on: {:?}",json);
-                    }
-                }
-            },
-            Json::ARRAY(values) => {
-                match value {
+                },
+                Json::ARRAY(values) => match value {
                     Json::OBJECT { name, value } => {
-                        values.push( Json::OBJECT { name, value } );
-
-                        return self;
-                    },
-                    Json::JSON(vals) => {
-                        values.push( Json::JSON(vals) );
-
-                        return self;
-                    },
-                    Json::ARRAY(vals) => {
-                        values.push( Json::ARRAY(vals) );
-
-                        return self;
-                    },
-                    Json::STRING(val) => {
-                        values.push( Json::STRING(val) );
-
-                        return self;
-                    },
-                    Json::NUMBER(val) => {
-                        values.push( Json::NUMBER(val) );
-
-                        return self;
-                    },
-                    Json::BOOL(val) => {
-                        values.push( Json::BOOL(val) );
-
-                        return self;
-                    },
-                    Json::NULL => {
-                        values.push( Json::NULL );
-
-                        return self;
+                        values.push(Json::OBJECT { name, value });
                     }
+                    Json::JSON(vals) => {
+                        values.push(Json::JSON(vals));
+                    }
+                    Json::ARRAY(vals) => {
+                        values.push(Json::ARRAY(vals));
+                    }
+                    Json::STRING(val) => {
+                        values.push(Json::STRING(val));
+                    }
+                    Json::NUMBER(val) => {
+                        values.push(Json::NUMBER(val));
+                    }
+                    Json::BOOL(val) => {
+                        values.push(Json::BOOL(val));
+                    }
+                    Json::NULL => {
+                        values.push(Json::NULL);
+                    }
+                },
+                json => {
+                    panic!("The function `add(`&mut self`,`name: String`,`value: Json`)` may only be called on a `Json::JSON`, `Json::ARRAY` or `Json::OBJECT` holding a `Json::JSON` or `Json::ARRAY`. It was called on: {:?}",json);
+                }
+            },
+            Json::ARRAY(values) => match value {
+                Json::OBJECT { name, value } => {
+                    values.push(Json::OBJECT { name, value });
+                }
+                Json::JSON(vals) => {
+                    values.push(Json::JSON(vals));
+                }
+                Json::ARRAY(vals) => {
+                    values.push(Json::ARRAY(vals));
+                }
+                Json::STRING(val) => {
+                    values.push(Json::STRING(val));
+                }
+                Json::NUMBER(val) => {
+                    values.push(Json::NUMBER(val));
+                }
+                Json::BOOL(val) => {
+                    values.push(Json::BOOL(val));
+                }
+                Json::NULL => {
+                    values.push(Json::NULL);
                 }
             },
             json => {
                 panic!("The function `add(`&mut self`,`name: String`,`value: Json`)` may only be called on a `Json::JSON`, `Json::ARRAY` or `Json::OBJECT` holding a `Json::JSON` or `Json::ARRAY`. It was called on: {:?}",json);
             }
         }
+
+        self
     }
 
     /// Get the `Json` with the requested name if it exists.
@@ -223,21 +162,21 @@ impl Json {
     /// ## Example
     /// ```
     /// use json_minimal::*;
-    /// 
+    ///
     /// let mut json = Json::new();
-    /// 
+    ///
     /// json
     ///     .add(
     ///         Json::OBJECT {
     ///             name: String::from("Greeting"),
-    /// 
+    ///
     ///             value: Box::new(
     ///                 Json::STRING( String::from("Hello, world!") )
     ///             )
     ///         }
     ///     )
     /// ;
-    /// 
+    ///
     /// match json.get("Greeting") {
     ///     Some(json) => {
     ///         match json {
@@ -261,49 +200,41 @@ impl Json {
     ///     }
     /// }
     /// ```
-    pub fn get(&self,search: &str) -> Option<&Json> {
+    pub fn get(&self, search: &str) -> Option<&Json> {
         match self {
             Json::JSON(values) => {
                 for n in 0..values.len() {
                     match &values[n] {
                         Json::OBJECT { name, value: _ } => {
-                            match name == search {
-                                true => {
-                                    return Some(&values[n]);
-                                },
-                                false => {},
+                            if name == search {
+                                return Some(&values[n]);
                             }
-                        },
+                        }
                         _ => {}
                     }
                 }
 
                 return None;
-            },
-            Json::OBJECT { name: _, value } => {
-                match value.unbox() {
-                    Json::JSON(values) => {
-                        for n in 0..values.len() {
-                            match &values[n] {
-                                Json::OBJECT { name, value: _ } => {
-                                    match name == search {
-                                        true => {
-                                            return Some(&values[n]);
-                                        },
-                                        false => {},
-                                    }
-                                },
-                                _ => {}
-                            }
-                        }
-        
-                        return None;
-                    },
-                    json => {
-                        panic!("The function `get(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
-                    },
-                }
             }
+            Json::OBJECT { name: _, value } => match value.unbox() {
+                Json::JSON(values) => {
+                    for n in 0..values.len() {
+                        match &values[n] {
+                            Json::OBJECT { name, value: _ } => {
+                                if name == search {
+                                    return Some(&values[n]);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    return None;
+                }
+                json => {
+                    panic!("The function `get(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
+                }
+            },
             json => {
                 panic!("The function `get(`&self`,`search: &str`)` may only be called on a `Json::JSON`. I was called on: {:?}",json);
             }
@@ -320,47 +251,37 @@ impl Json {
                 for n in 0..values.len() {
                     match &values[n] {
                         Json::OBJECT { name, value: _ } => {
-                            match name == search {
-                                true => {
-                                    return Some(&mut values[n]);
-                                },
-                                false => {},
+                            if name == search {
+                                return Some(&mut values[n]);
                             }
-                        },
+                        }
                         _ => {}
                     }
                 }
-
-                return None;
-            },
-            Json::OBJECT { name: _, value } => {
-                match value.unbox_mut() {
-                    Json::JSON(values) => {
-                        for n in 0..values.len() {
-                            match &values[n] {
-                                Json::OBJECT { name, value: _ } => {
-                                    match name == search {
-                                        true => {
-                                            return Some(&mut values[n]);
-                                        },
-                                        false => {},
-                                    }
-                                },
-                                _ => {}
-                            }
-                        }
-        
-                        return None;
-                    },
-                    json => {
-                        panic!("The function `get_mut(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
-                    },
-                }
             }
+            Json::OBJECT { name: _, value } => match value.unbox_mut() {
+                Json::JSON(values) => {
+                    for n in 0..values.len() {
+                        match &values[n] {
+                            Json::OBJECT { name, value: _ } => {
+                                if name == search {
+                                    return Some(&mut values[n]);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+                json => {
+                    panic!("The function `get_mut(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
+                }
+            },
             json => {
                 panic!("The function `get_mut(`&self`,`search: &str`)` may only be called on a `Json::JSON` or a `Json::OBJECT` holding a `Json::JSON`. I was called on: {:?}",json);
             }
         }
+
+        None
     }
 
     /// Enables matching the contents of a `Box`.
@@ -380,8 +301,8 @@ impl Json {
 
         match self {
             Json::OBJECT { name, value } => {
-                result.push_str(&format!("\"{}\":{}",name,value.print()));
-            },
+                result.push_str(&format!("\"{}\":{}", name, value.print()));
+            }
             Json::JSON(values) => {
                 result.push('{');
 
@@ -393,10 +314,8 @@ impl Json {
                 result.pop();
 
                 result.push('}');
-
-            },
+            }
             Json::ARRAY(values) => {
-
                 result.push('[');
 
                 for n in 0..values.len() {
@@ -407,27 +326,23 @@ impl Json {
                 result.pop();
 
                 result.push(']');
-
-            },
+            }
             Json::STRING(val) => {
-                result.push_str(&format!("\"{}\"",val));
-            },
+                result.push_str(&format!("\"{}\"", val));
+            }
             Json::NUMBER(val) => {
-                result.push_str(&format!("{}",val));
-            },
+                result.push_str(&format!("{}", val));
+            }
             Json::BOOL(val) => {
-                match val {
-                    true => {
-                        result.push_str("true");
-                    },
-                    false => {
-                        result.push_str("false")
-                    },
+                if *val {
+                    result.push_str("true");
+                } else {
+                    result.push_str("false")
                 }
-            },
+            }
             Json::NULL => {
                 result.push_str("null");
-            },
+            }
         }
 
         result
@@ -440,7 +355,7 @@ impl Json {
     /// ## Example
     /// ```
     /// use json_minimal::*;
-    /// 
+    ///
     /// match Json::parse(b"{\"Greeting\":\"Hello, world!\"}") {
     ///     Ok(json) => {
     ///         
@@ -473,831 +388,268 @@ impl Json {
     /// }
     /// ```
     /// See the <a href="https://github.com/36den/json_minimal-rs/">tutorial</a> on github for more.
-    pub fn parse(input: &[u8]) -> Result<Json,(usize,&'static str)> {
+    pub fn parse(input: &[u8]) -> Result<Json, (usize, &'static str)> {
         let mut incr: usize = 0;
 
         match input[incr] as char {
-            '{' => {
-                return Self::parse_json(input,&mut incr);
-            },
-            '\"' => {
-                return Self::parse_string(input,&mut incr);
-            },
-            '[' => {
-                return Self::parse_array(input,&mut incr);
-            },
-            't' => {
-                return Self::parse_bool(input,&mut incr);
-            },
-            'f' => {
-                return Self::parse_bool(input,&mut incr);
-            },
-            'n' => {
-                return Self::parse_null(input,&mut incr);
-            },
-            '0' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '1' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '2' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '3' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '4' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '5' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '6' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '7' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '8' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            '9' => {
-                return Self::parse_number(input,&mut incr);
-            },
-            _ => {
-                return Err( (incr,"Not a valid json format") );
-            }
+            '{' => Self::parse_json(input, &mut incr),
+            '\"' => Self::parse_string(input, &mut incr),
+            '[' => Self::parse_array(input, &mut incr),
+            't' | 'f' => Self::parse_bool(input, &mut incr),
+            'n' => Self::parse_null(input, &mut incr),
+            '0'..='9' => Self::parse_number(input, &mut incr),
+            _ => Err((incr, "Not a valid json format")),
         }
     }
 
     // This must exclusively be used by `parse_string` to make any sense.
-    fn parse_object(input: &[u8],incr: &mut usize,name: String) -> Result<Json,(usize,&'static str)> {
-
-        match input[*incr] as char {
-            ':' => {
-
-            },
-            _ => {
-                return Err( (*incr,"Error parsing object.") );
-            }
+    fn parse_object(
+        input: &[u8],
+        incr: &mut usize,
+        name: String,
+    ) -> Result<Json, (usize, &'static str)> {
+        if input[*incr] as char != ':' {
+            return Err((*incr, "Error parsing object."));
         }
 
         *incr += 1;
 
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing object.") );
-            }
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing object."));
         }
 
-        match input[*incr]  as char {
-            '{' => {
-                match Self::parse_json(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '[' => {
-                match Self::parse_array(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '\"' => {
-                match Self::parse_string(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            't' => {
-                match Self::parse_bool(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            'f' => {
-                match Self::parse_bool(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            'n' => {
-                match Self::parse_null(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '0' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '1' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '2' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '3' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            } ,
-            '4' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '5' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '6' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '7' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '8' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
-            '9' => {
-                match Self::parse_number(input,incr) {
-                    Ok(json) => {
-                        return Ok(
-                            Json::OBJECT {
-                                name,
-
-                                value: Box::new( json )
-                            }
-                        )
-                    },
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            },
+        let value = match input[*incr] as char {
+            '{' => Self::parse_json(input, incr)?,
+            '[' => Self::parse_array(input, incr)?,
+            '\"' => Self::parse_string(input, incr)?,
+            't' | 'f' => Self::parse_bool(input, incr)?,
+            'n' => Self::parse_null(input, incr)?,
+            '0'..='9' => Self::parse_number(input, incr)?,
             _ => {
-                return Err( (*incr,"Error parsing object.") );
+                return Err((*incr, "Error parsing object."));
             }
-        }
+        };
+
+        Ok(Json::OBJECT {
+            name,
+
+            value: Box::new(value),
+        })
     }
 
     // Parse if you thik it's something like `{...}`
-    fn parse_json(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
+    fn parse_json(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
         let mut result: Vec<Json> = Vec::new();
 
-        match input[*incr] as char {
-            '{' => {}
-            _ => {
-                return Err( (*incr,"Error parsing json.") );
-            }
+        if input[*incr] as char != '{' {
+            return Err((*incr, "Error parsing json."));
         }
-    
+
         *incr += 1;
-    
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing json.") );
-            }
+
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing json."));
         }
 
         loop {
-            match input[*incr] as char {
+            let json = match input[*incr] as char {
                 ',' => {
                     *incr += 1;
-                },
-                '\"' => {
-                    match Self::parse_string(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '[' => {
-                    match Self::parse_array(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                't' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                'f' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                'n' => {
-                    match Self::parse_null(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '0' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '1' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '2' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '3' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                } ,
-                '4' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '5' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '6' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '7' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '8' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '9' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
+                    continue;
+                }
+                '\"' => Self::parse_string(input, incr)?,
+                '[' => Self::parse_array(input, incr)?,
+                't' | 'f' => Self::parse_bool(input, incr)?,
+                'n' => Self::parse_null(input, incr)?,
+                '0'..='9' => Self::parse_number(input, incr)?,
                 '}' => {
                     *incr += 1;
 
-                    return Ok( Json::JSON( result ) );
-                },
-                '{' => {
-                    match Self::parse_json(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                _ => {
-                    return Err( (*incr,"Error parsing json.") );  
+                    return Ok(Json::JSON(result));
                 }
-            }
+                '{' => Self::parse_json(input, incr)?,
+                _ => {
+                    return Err((*incr, "Error parsing json."));
+                }
+            };
+
+            result.push(json);
         }
     }
 
     // Parse a &str if you're sure it resembles `[...`
-    fn parse_array(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
-    let mut result: Vec<Json> = Vec::new();
-    
-        match input[*incr] as char {
-            '[' => {}
-            _ => {
-                return Err( (*incr,"Error parsing array.") );
-            }
+    fn parse_array(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
+        let mut result: Vec<Json> = Vec::new();
+
+        if input[*incr] as char != '[' {
+            return Err((*incr, "Error parsing array."));
         }
-    
+
         *incr += 1;
-    
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing array.") );
-            }
+
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing array."));
         }
-    
+
         loop {
-            match input[*incr] as char {
+            let json = match input[*incr] as char {
                 ',' => {
                     *incr += 1;
-                },
-                '\"' => {
-                    match Self::parse_string(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '[' => {
-                    match Self::parse_array(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '{' => {
-                    match Self::parse_json(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                't' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                'f' => {
-                    match Self::parse_bool(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                'n' => {
-                    match Self::parse_null(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '0' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '1' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '2' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '3' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                } ,
-                '4' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '5' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '6' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '7' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '8' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
-                '9' => {
-                    match Self::parse_number(input,incr) {
-                        Ok(json) => {
-                            result.push( json );
-                        },
-                        Err(e) => {
-                            return Err(e);
-                        }
-                    }
-                },
+                    continue;
+                }
+                '\"' => Self::parse_string(input, incr)?,
+                '[' => Self::parse_array(input, incr)?,
+                '{' => Self::parse_json(input, incr)?,
+                't' | 'f' => Self::parse_bool(input, incr)?,
+                'n' => Self::parse_null(input, incr)?,
+                '0'..='9' => Self::parse_number(input, incr)?,
                 ']' => {
                     *incr += 1;
 
-                    return Ok( Json::ARRAY( result ) );
+                    return Ok(Json::ARRAY(result));
                 }
                 _ => {
-                    return Err( (*incr,"Error parsing array.") );  
+                    return Err((*incr, "Error parsing array."));
                 }
-            }
+            };
+
+            result.push(json);
         }
-    
     }
 
     // Parse a &str if you know that it corresponds to/starts with a json String.
-    fn parse_string(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
-        let mut result = String::new();
-    
+    fn parse_string(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
+        let mut result: Vec<u8> = Vec::new();
+
+        if input[*incr] as char != '\"' {
+            return Err((*incr, "Error parsing string."));
+        }
+
+        *incr += 1;
+
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing string."));
+        }
+
+        loop {
+            match input[*incr] {
+                b'\"' => {
+                    *incr += 1;
+
+                    let result = String::from_utf8(result)
+                        .map_err(|_| (*incr, "Error parsing non-utf8 string."))?;
+
+                    if *incr < input.len() {
+                        if input[*incr] as char == ':' {
+                            return Self::parse_object(input, incr, result);
+                        } else {
+                            return Ok(Json::STRING(result));
+                        }
+                    } else {
+                        return Ok(Json::STRING(result));
+                    }
+                }
+                b'\\' => {
+                    Self::parse_string_escape_sequence(input, incr, &mut result)?;
+                }
+                c => {
+                    result.push(c);
+
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing string."));
+                    }
+                }
+            }
+        }
+    }
+
+    // Parse a escape sequence inside a string
+    fn parse_string_escape_sequence(
+        input: &[u8],
+        incr: &mut usize,
+        result: &mut Vec<u8>,
+    ) -> Result<(), (usize, &'static str)> {
+        if input[*incr] as char != '\\' {
+            return Err((*incr, "Error parsing string escape sequence."));
+        }
+
+        *incr += 1;
+
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing string escape sequence."));
+        }
+
         match input[*incr] as char {
-            '\"' => {}
+            '\"' | '\\' | '/' => {
+                result.push(input[*incr]);
+            }
+            'b' => {
+                result.push(b'\x08');
+            }
+            'f' => {
+                result.push(b'\x0c');
+            }
+            'n' => {
+                result.push(b'\n');
+            }
+            'r' => {
+                result.push(b'\r');
+            }
+            't' => {
+                result.push(b'\t');
+            }
+            'u' => {
+                const BAD_UNICODE: &str = "Error parsing unicode string escape sequence.";
+
+                if *incr + 4 >= input.len() {
+                    return Err((*incr, BAD_UNICODE));
+                }
+
+                let hex = (&input[*incr + 1..*incr + 5]).to_vec();
+                let hex = String::from_utf8(hex).map_err(|_| (*incr, BAD_UNICODE))?;
+                let value = u16::from_str_radix(&hex, 16).map_err(|_| (*incr, BAD_UNICODE))?;
+                let value = std::char::from_u32(value as u32).ok_or((*incr, BAD_UNICODE))?;
+
+                let mut buffer = [0; 4];
+                result.extend(value.encode_utf8(&mut buffer).as_bytes());
+                *incr += 4;
+            }
             _ => {
-                return Err( (*incr,"Error parsing string.") );
+                return Err((*incr, "Error parsing invalid string escape sequence."));
             }
         }
 
         *incr += 1;
 
-        match *incr < input.len() {
-            true => {}
-            false => {
-                return Err( (*incr,"Error parsing string.") );
-            }
+        if *incr >= input.len() {
+            return Err((*incr, "Error parsing string escape sequence."));
         }
 
-        loop {
-            match input[*incr] as char {
-                '\"' => {
-                    *incr += 1;
-
-                    match *incr < input.len() {
-                        true => {
-                            match input[*incr] as char {
-                                ':' => {
-                                    return Self::parse_object(input,incr,result);
-                                },
-                                _ => {
-                                    return Ok( Json::STRING( result ) );
-                                }
-                            }
-                        },
-                        false => {
-                            return Ok( Json::STRING( result ) );
-                        }
-                    }
-                },
-                c => {
-                    result.push(c);
-
-                    *incr += 1;
-
-                    match *incr < input.len() {
-                        true => {}
-                        false => {
-                            return Err( (*incr,"Error parsing string.") );
-                        }
-                    }
-                }
-            }
-        }
-
+        Ok(())
     }
 
-    fn parse_number(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
+    fn parse_number(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
         let mut result = String::new();
 
         loop {
             match input[*incr] as char {
-                '}' => {
+                ',' | ']' | '}' => {
                     break;
-                },
-                ']' => {
-                    break;
-                },
-                ',' => {
-                    break;
-                },
+                }
                 c => {
                     result.push(c);
 
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {
-                        },
-                        false => {
-                            match result.parse::<f64>() {
-                                Ok(num) => {
-                                    return Ok( Json::NUMBER( num ) );
-                                },
-                                Err(_) => {
-                                    return Err( (*incr,"Error parsing number.") );
-                                }
+                    if *incr >= input.len() {
+                        match result.parse::<f64>() {
+                            Ok(num) => {
+                                return Ok(Json::NUMBER(num));
+                            }
+                            Err(_) => {
+                                return Err((*incr, "Error parsing number."));
                             }
                         }
                     }
@@ -1307,122 +659,83 @@ impl Json {
 
         match result.parse::<f64>() {
             Ok(num) => {
-                return Ok( Json::NUMBER( num ) );
-            },
+                return Ok(Json::NUMBER(num));
+            }
             Err(_) => {
-                return Err( (*incr,"Error parsing number.") );
+                return Err((*incr, "Error parsing number."));
             }
         }
-
     }
 
-    fn parse_bool(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
+    fn parse_bool(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
         let mut result = String::new();
 
         loop {
             match input[*incr] as char {
-                ',' => {
+                ',' | ']' | '}' => {
                     break;
-                },
-                ']' => {
-                    break;
-                },
-                '}' => {
-                    break;
-                },
+                }
                 c => {
                     result.push(c);
 
                     *incr += 1;
 
-                    match *incr < input.len() {
-                        true => {}
-                        false => {
-                            match result == "true" {
-                                true => {
-                                    return Ok( Json::BOOL( true ) );
-                                },
-                                false => {}
-                            }
-                    
-                            match result == "false" {
-                                true => {
-                                    return Ok( Json::BOOL( false ) );
-                                },
-                                false => {}
-                            }
-                    
-                            return Err( (*incr,"Error parsing bool.") );
+                    if *incr >= input.len() {
+                        if result == "true" {
+                            return Ok(Json::BOOL(true));
+                        }
+
+                        if result == "false" {
+                            return Ok(Json::BOOL(false));
+                        }
+
+                        return Err((*incr, "Error parsing bool."));
+                    }
+                }
+            }
+        }
+
+        if result == "true" {
+            return Ok(Json::BOOL(true));
+        }
+
+        if result == "false" {
+            return Ok(Json::BOOL(false));
+        }
+
+        return Err((*incr, "Error parsing bool."));
+    }
+
+    fn parse_null(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
+        let mut result = String::new();
+
+        loop {
+            match input[*incr] as char {
+                ',' | ']' | '}' => {
+                    break;
+                }
+                c => {
+                    result.push(c);
+
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        if result == "null" {
+                            return Ok(Json::NULL);
+                        } else {
+                            return Err((*incr, "Error parsing null."));
                         }
                     }
                 }
             }
         }
 
-        match result == "true" {
-            true => {
-                return Ok( Json::BOOL( true ) );
-            },
-            false => {}
+        if result == "null" {
+            return Ok(Json::NULL);
+        } else {
+            return Err((*incr, "Error parsing null."));
         }
-
-        match result == "false" {
-            true => {
-                return Ok( Json::BOOL( false ) );
-            },
-            false => {}
-        }
-
-        return Err( (*incr,"Error parsing bool.") );
     }
-
-    fn parse_null(input: &[u8], incr: &mut usize) -> Result<Json,(usize,&'static str)> {
-        let mut result = String::new();
-
-        loop {
-
-            match input[*incr] as char {
-                ',' => {
-                    break;
-                },
-                ']' => {
-                    break;
-                },
-                '}' => {
-                    break;
-                },
-                c => {
-                    result.push(c);
-
-                    *incr += 1;
-
-                    match *incr < input.len() {
-                        true => {}
-                        false => {
-                            match result == "null" {
-                                true => {
-                                    return Ok( Json::NULL );
-                                },
-                                false => {
-                                    return Err( (*incr,"Error parsing null.") );
-                                }
-                            } 
-                        }
-                    }
-                }
-            }
-        }
-
-        match result == "null" {
-            true => {
-                return Ok( Json::NULL );
-            },
-            false => {
-                return Err( (*incr,"Error parsing null.") );
-            }
-        } 
-    }
-
 }
 
 #[cfg(test)]
