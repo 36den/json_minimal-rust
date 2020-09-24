@@ -350,7 +350,7 @@ impl Json {
 
     /// Parses the given bytes if a json structure is found. It even works with `\"Hello\":\"World\"`
     /// (doesn't have to be like `{...}`), i.e. it can return any of the variants in the `Json` enum.
-    /// The error is returned in the for `(last position,what was the problem)`. Unfortunately the error
+    /// The error is returned in the form `(last position, what went wrong)`. Unfortunately the error
     /// description are minimal (basically "Error parsing ...type...").
     /// ## Example
     /// ```
