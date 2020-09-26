@@ -166,9 +166,11 @@ Calling:
 will result in a `String` containing:
 `{"Greeting":"Hello, world!","Days of the week":{"Total number of days":7,"They are called":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},"Conclusion":{"Minimal in my opinion":true,"How much I care about your opinion":null,"Comment":";)"}}`
 
+If you would like the json string in a different format you can easily make your own print function.
+
 ## Tutorial (parsing and working with jsons)
 
-Parsing a json value from bytes is even more minimal - at the cost of being more cumbersome. Let's see how we can parse the json we generated above. You must be sure that the json you are about to parse is in the same format as this here (no things like '\n', '\r', ' ' etc. inbetween):
+Parsing a json value from bytes is even more minimal - at the cost of being more cumbersome. Let's see how we can parse the json we generated above:
 ```rust
     use json_minimal::*;
 
@@ -293,4 +295,20 @@ The function `Json::parse(...)` can also parse 'standalone values'. Example:
         }
     }
 ```
-Please let me know if you experience any issues.
+## Changes & Improvements
+
+* @Lonami (github) has made improvements: 
+    1. `json_minimal` can now parse non-ASCII strings and escape sequences.
+    2. The code is cleaner thanks to the question-mark operator and using rustfmt.
+    3. Some parsing stuff that didn't work now works.
+    
+    A thousand thanks to @Lonami !!! 
+
+* `json_minimal` can now also parse 'pretty' json like this (as long as only `\r`, `\n`, `\t` and whitespace were used for formatting):
+```
+{
+    "Array": [ "Hello" , "World" , "!" ]
+}
+```
+---
+Please let me know if something doesn't work. I can't promise i'll react immediately, though.
