@@ -418,6 +418,21 @@ impl Json {
             return Err((*incr, "Error parsing object."));
         }
 
+        loop {
+            match input[*incr] as char {
+                '\r' | '\n' | '\t' | ' ' => {
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing object."));
+                    }
+                },
+                _ => {
+                 break;
+                }
+            }
+        }
+
         let value = match input[*incr] as char {
             '{' => Self::parse_json(input, incr)?,
             '[' => Self::parse_array(input, incr)?,
@@ -468,6 +483,15 @@ impl Json {
                     return Ok(Json::JSON(result));
                 }
                 '{' => Self::parse_json(input, incr)?,
+                '\r' | '\n' | '\t' | ' ' => {                    
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing object."));
+                    }
+
+                    continue;
+                },
                 _ => {
                     return Err((*incr, "Error parsing json."));
                 }
@@ -507,7 +531,16 @@ impl Json {
                     *incr += 1;
 
                     return Ok(Json::ARRAY(result));
-                }
+                },
+                '\r' | '\n' | '\t' | ' ' => {
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing object."));
+                    }
+
+                    continue;
+                },
                 _ => {
                     return Err((*incr, "Error parsing array."));
                 }
@@ -548,10 +581,10 @@ impl Json {
                     } else {
                         return Ok(Json::STRING(result));
                     }
-                }
+                },
                 b'\\' => {
                     Self::parse_string_escape_sequence(input, incr, &mut result)?;
-                }
+                },
                 c => {
                     result.push(c);
 
@@ -565,7 +598,7 @@ impl Json {
         }
     }
 
-    // Parse a escape sequence inside a string
+    // Parse an escape sequence inside a string
     fn parse_string_escape_sequence(
         input: &[u8],
         incr: &mut usize,
@@ -637,7 +670,16 @@ impl Json {
             match input[*incr] as char {
                 ',' | ']' | '}' => {
                     break;
-                }
+                },
+                '\r' | '\n' | '\t' | ' ' => {
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing object."));
+                    }
+
+                    continue;
+                },
                 c => {
                     result.push(c);
 
@@ -674,7 +716,16 @@ impl Json {
             match input[*incr] as char {
                 ',' | ']' | '}' => {
                     break;
-                }
+                },
+                '\r' | '\n' | '\t' | ' ' => {
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing object."));
+                    }
+
+                    continue;
+                },
                 c => {
                     result.push(c);
 
@@ -713,7 +764,16 @@ impl Json {
             match input[*incr] as char {
                 ',' | ']' | '}' => {
                     break;
-                }
+                },
+                '\r' | '\n' | '\t' | ' ' => {
+                    *incr += 1;
+
+                    if *incr >= input.len() {
+                        return Err((*incr, "Error parsing object."));
+                    }
+
+                    continue;
+                },
                 c => {
                     result.push(c);
 
