@@ -586,6 +586,69 @@ fn parse_non_ascii() {
     }
 }
 
+#[test]
+fn parse_pretty() {
+    let json = match Json::parse(b"{\r\n\t\"Array\": [\r\n\t\t\"First\" ,\r\n\r\n\t\t2 ,\r\n\r\n\t\t[\"Three\"] ,\r\n\r\n\t\t3.6\r\n\t],\r\n\t{\r\n\r\n\t\t\"Sub-Object\": \"Hello, world!\"\r\n\t}\r\n}") {
+        Ok(json) => json,
+        Err((pos, msg)) => {
+            panic!("`{}` at position {}", msg, pos);
+        } 
+    };
+
+    match json {
+        Json::JSON(values) => {
+
+            match values[0].unbox() {
+                Json::OBJECT { name, value } => {
+                    assert_eq!(name,"Array");
+
+                    match value.unbox() {
+                        Json::ARRAY(values) => {
+                            assert_eq!(values.len(),4);
+                        },
+                        json => {
+                            panic!("Expected Json::ARRAY but found {:?}!!!", json);
+                        }
+                    }
+                },
+                json => {
+                    panic!("Expected Json::OBJECT but found {:?}!!!", json);
+                }
+            }
+
+            match values[1].unbox() {
+                Json::JSON(values) => {
+
+                    match values[0].unbox() {
+                        Json::OBJECT { name, value } => {
+                            assert_eq!(name,"Sub-Object");
+        
+                            match value.unbox() {
+                                Json::STRING(value) => {
+                                    assert_eq!(value,"Hello, world!");
+                                },
+                                json => {
+                                    panic!("Expected Json::STRING but found {:?}!!!", json);
+                                }
+                            }
+                        },
+                        json => {
+                            panic!("Expected Json::OBJECT but found {:?}!!!", json);
+                        }
+                    }
+                    
+                },
+                json => {
+                    panic!("Expected Json::Json but found {:?}!!!", json);
+                }
+            }
+        },
+        json => {
+            panic!("Expected Json::JSON but found {:?}!!!", json);
+        }
+    }
+}
+
 fn parse_error((pos, msg): (usize, &str)) {
     panic!("`{}` at position `{}`!!!", msg, pos);
 }
