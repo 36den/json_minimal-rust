@@ -166,7 +166,7 @@ Calling:
 will result in a `String` containing:
 `{"Greeting":"Hello, world!","Days of the week":{"Total number of days":7,"They are called":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},"Conclusion":{"Minimal in my opinion":true,"How much I care about your opinion":null,"Comment":";)"}}`
 
-If you would like the json string in a different format you can easily make your own print function.
+If you would like the json string in a different format you can easily make your own 'print' function.
 
 ## Tutorial (parsing and working with jsons)
 
