@@ -298,7 +298,7 @@ The function `Json::parse(...)` can also parse 'standalone values'. Example:
 ## Changes & Improvements
 
 * @Lonami (github) has made improvements: 
-    1. `json_minimal` can now parse non-ASCII strings and escape sequences.
+    1. `json_minimal` can now parse non-ASCII strings and escape sequences. (I overlooked this, I admit.)
     2. The code is cleaner thanks to the question-mark operator and using rustfmt.
     3. Some parsing stuff that didn't work now works.
     
@@ -310,5 +310,7 @@ The function `Json::parse(...)` can also parse 'standalone values'. Example:
     "Array": [ "Hello" , "World" , "!" ]
 }
 ```
+This should also have worked from the start but I did not include because it of my aversion to energy inefficiency (although it is, perhaps, unfounded).
+
 ---
 Please let me know if something doesn't work. I can't promise i'll react immediately, though.
