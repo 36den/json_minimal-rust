@@ -297,12 +297,12 @@ The function `Json::parse(...)` can also parse 'standalone values'. Example:
 ```
 ## Changes & Improvements
 
-* @Lonami (github) has made improvements: 
+* Lonami (github) has made improvements: 
     1. `json_minimal` can now parse non-ASCII strings and escape sequences. (I overlooked this, I admit.)
     2. The code is cleaner thanks to the question-mark operator and using rustfmt.
     3. Some parsing stuff that didn't work now works.
     
-    A thousand thanks to @Lonami !!! 
+    A thousand thanks to Lonami !!! 
 
 * `json_minimal` can now also parse 'pretty' json like this (as long as only `\r`, `\n`, `\t` and whitespace were used for formatting):
 ```
