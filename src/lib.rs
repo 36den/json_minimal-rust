@@ -487,7 +487,7 @@ impl Json {
                     *incr += 1;
 
                     if *incr >= input.len() {
-                        return Err((*incr, "Error parsing object."));
+                        return Err((*incr, "Error parsing json."));
                     }
 
                     continue;
@@ -536,7 +536,7 @@ impl Json {
                     *incr += 1;
 
                     if *incr >= input.len() {
-                        return Err((*incr, "Error parsing object."));
+                        return Err((*incr, "Error parsing array."));
                     }
 
                     continue;
@@ -668,17 +668,8 @@ impl Json {
 
         loop {
             match input[*incr] as char {
-                ',' | ']' | '}' => {
+                ',' | ']' | '}' | '\r' | '\n' | '\t' | ' ' => {
                     break;
-                },
-                '\r' | '\n' | '\t' | ' ' => {
-                    *incr += 1;
-
-                    if *incr >= input.len() {
-                        return Err((*incr, "Error parsing object."));
-                    }
-
-                    continue;
                 },
                 c => {
                     result.push(c);
@@ -714,17 +705,8 @@ impl Json {
 
         loop {
             match input[*incr] as char {
-                ',' | ']' | '}' => {
+                ',' | ']' | '}' | '\r' | '\n' | '\t' | ' ' => {
                     break;
-                },
-                '\r' | '\n' | '\t' | ' ' => {
-                    *incr += 1;
-
-                    if *incr >= input.len() {
-                        return Err((*incr, "Error parsing object."));
-                    }
-
-                    continue;
                 },
                 c => {
                     result.push(c);
@@ -762,17 +744,8 @@ impl Json {
 
         loop {
             match input[*incr] as char {
-                ',' | ']' | '}' => {
+                ',' | ']' | '}' | '\r' | '\n' | '\t' | ' ' => {
                     break;
-                },
-                '\r' | '\n' | '\t' | ' ' => {
-                    *incr += 1;
-
-                    if *incr >= input.len() {
-                        return Err((*incr, "Error parsing object."));
-                    }
-
-                    continue;
                 },
                 c => {
                     result.push(c);
