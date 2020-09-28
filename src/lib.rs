@@ -408,9 +408,9 @@ impl Json {
         incr: &mut usize,
         name: String,
     ) -> Result<Json, (usize, &'static str)> {
-        if input[*incr] as char != ':' {
-            return Err((*incr, "Error parsing object."));
-        }
+//        if input[*incr] as char != ':' {
+//            return Err((*incr, "Error parsing object."));
+//        }
 
         *incr += 1;
 
@@ -456,9 +456,9 @@ impl Json {
     fn parse_json(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
         let mut result: Vec<Json> = Vec::new();
 
-        if input[*incr] as char != '{' {
-            return Err((*incr, "Error parsing json."));
-        }
+//        if input[*incr] as char != '{' {
+//            return Err((*incr, "Error parsing json."));
+//        }
 
         *incr += 1;
 
@@ -505,9 +505,9 @@ impl Json {
     fn parse_array(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
         let mut result: Vec<Json> = Vec::new();
 
-        if input[*incr] as char != '[' {
-            return Err((*incr, "Error parsing array."));
-        }
+//        if input[*incr] as char != '[' {
+//            return Err((*incr, "Error parsing array."));
+//        }
 
         *incr += 1;
 
@@ -554,9 +554,9 @@ impl Json {
     fn parse_string(input: &[u8], incr: &mut usize) -> Result<Json, (usize, &'static str)> {
         let mut result: Vec<u8> = Vec::new();
 
-        if input[*incr] as char != '\"' {
-            return Err((*incr, "Error parsing string."));
-        }
+//        if input[*incr] as char != '\"' {
+//            return Err((*incr, "Error parsing string."));
+//        }
 
         *incr += 1;
 
@@ -604,9 +604,9 @@ impl Json {
         incr: &mut usize,
         result: &mut Vec<u8>,
     ) -> Result<(), (usize, &'static str)> {
-        if input[*incr] as char != '\\' {
-            return Err((*incr, "Error parsing string escape sequence."));
-        }
+//        if input[*incr] as char != '\\' {
+//            return Err((*incr, "Error parsing string escape sequence."));
+//        }
 
         *incr += 1;
 
