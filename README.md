@@ -1,6 +1,10 @@
+# ! DO NOT USE !
+
+I recommend to not use this crate. Use a better, more professionally done one instead.
+
 # json_minimal
 
-A minimal json crate conforming to https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf .
+A minimal json crate conforming to https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf . Unfortunately, not 100% true. Again, I do not recommend that anyone use this crate.
 
 ## Tutorial (creating jsons)
 
