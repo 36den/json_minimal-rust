@@ -306,24 +306,26 @@ impl Json {
             Json::JSON(values) => {
                 result.push('{');
 
-                for n in 0..values.len() {
-                    result.push_str(&values[n].print());
-                    result.push(',');
-                }
-
-                result.pop();
+                result.push_str(
+                    values.into_iter()
+                        .map(|v| v.print())
+                        .collect::<Vec<String>>()
+                        .join(",")
+                        .as_str()
+                );
 
                 result.push('}');
             }
             Json::ARRAY(values) => {
                 result.push('[');
 
-                for n in 0..values.len() {
-                    result.push_str(&values[n].print());
-                    result.push(',');
-                }
-
-                result.pop();
+                result.push_str(
+                    values.into_iter()
+                        .map(|v| v.print())
+                        .collect::<Vec<String>>()
+                        .join(",")
+                        .as_str()
+                );
 
                 result.push(']');
             }
